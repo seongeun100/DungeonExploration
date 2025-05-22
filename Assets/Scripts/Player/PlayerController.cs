@@ -230,6 +230,9 @@ public class PlayerController : MonoBehaviour
     {
         isWallCling = false;
         _rigidbody.useGravity = true;
+        Vector3 velocity = _rigidbody.velocity;
+        velocity.y = 0f;
+        _rigidbody.velocity = velocity;
     }
-    
+
 }
