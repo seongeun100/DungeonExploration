@@ -4,6 +4,7 @@ using UnityEngine;
 public class PlayerCondition : MonoBehaviour
 {
     public UICondition uiCondition;
+    public BuffSlotPool buffPool;
     private PlayerController controller;
     private float speedBonus = 0f;
     private float jumpBonus = 0f;
@@ -47,17 +48,23 @@ public class PlayerCondition : MonoBehaviour
         health.Add(amount);
     }
 
-    public void AddMoveSpeed(float amount)
+    public void AddMoveSpeed(float amount, Sprite icon)
     {
         controller.moveSpeed += amount;
         speedBonus += amount;
+        BuffSlot slot = buffPool.GetBuffSlot();
+        slot.Init(buffPool);
+        slot.SetBuff(icon, buffDuration);
         StartBuffTimer();
     }
 
-    public void AddJumpPower(float amount)
+    public void AddJumpPower(float amount, Sprite icon)
     {
         controller.jumpPower += amount;
         jumpBonus += amount;
+        BuffSlot slot = buffPool.GetBuffSlot();
+        slot.Init(buffPool);
+        slot.SetBuff(icon, buffDuration);
         StartBuffTimer();
     }
 

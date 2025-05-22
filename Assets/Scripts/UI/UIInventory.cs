@@ -197,9 +197,9 @@ public class UIInventory : MonoBehaviour
                     case ConsumableType.Hunger:
                         condition.Eat(selectedItem.item.consumables[i].value); break;
                     case ConsumableType.MoveSpeed:
-                        condition.AddMoveSpeed(selectedItem.item.consumables[i].value); break;
+                        condition.AddMoveSpeed(selectedItem.item.consumables[i].value, selectedItem.item.icon); break;
                     case ConsumableType.JumpPower:
-                        condition.AddJumpPower(selectedItem.item.consumables[i].value); break;
+                        condition.AddJumpPower(selectedItem.item.consumables[i].value, selectedItem.item.icon); break;
                 }
             }
             RemoveSelctedItem();
