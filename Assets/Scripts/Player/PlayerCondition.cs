@@ -6,10 +6,15 @@ public class PlayerCondition : MonoBehaviour
     public UICondition uiCondition;
     public BuffSlotPool buffPool;
     private PlayerController controller;
-    private float speedBonus = 0f;
+    private float speedBonus;
     private float jumpBonus = 0f;
     private float buffDuration = 10f;
-    private Coroutine buffTimer;
+
+    private Coroutine speedBuffTimer;
+    private Coroutine jumpBuffTimer;
+
+    private BuffSlot speedBuffSlot;
+    private BuffSlot jumpBuffSlot;
 
     Condition health { get { return uiCondition.health; } }
     Condition hunger { get { return uiCondition.hunger; } }
@@ -50,43 +55,81 @@ public class PlayerCondition : MonoBehaviour
 
     public void AddMoveSpeed(float amount, Sprite icon)
     {
-        controller.moveSpeed += amount;
-        speedBonus += amount;
-        BuffSlot slot = buffPool.GetBuffSlot();
-        slot.Init(buffPool);
-        slot.SetBuff(icon, buffDuration);
-        StartBuffTimer();
+        // 기존 수치 제거
+        if (speedBonus != 0f)
+            controller.moveSpeed -= speedBonus;
+
+        // 새 수치 적용
+        speedBonus = amount;
+        controller.moveSpeed += speedBonus;
+
+        // 기존 UI 제거
+        if (speedBuffSlot != null)
+        {
+            buffPool.Return(speedBuffSlot);
+            speedBuffSlot = null;
+        }
+
+        // UI 버프 슬롯 새로 적용
+        speedBuffSlot = buffPool.GetBuffSlot();
+        speedBuffSlot.Init(buffPool);
+        speedBuffSlot.SetBuff(icon, buffDuration);
+
+        // 코루틴 타이머 재시작
+        if (speedBuffTimer != null)
+            StopCoroutine(speedBuffTimer);
+        speedBuffTimer = StartCoroutine(ResetSpeedBuffAfterDelay(buffDuration));
     }
 
     public void AddJumpPower(float amount, Sprite icon)
     {
-        controller.jumpPower += amount;
-        jumpBonus += amount;
-        BuffSlot slot = buffPool.GetBuffSlot();
-        slot.Init(buffPool);
-        slot.SetBuff(icon, buffDuration);
-        StartBuffTimer();
-    }
+        if (jumpBonus != 0f)
+            controller.jumpPower -= jumpBonus;
 
-    void StartBuffTimer()
-    {
-        if (buffTimer != null)
+        jumpBonus = amount;
+        controller.jumpPower += jumpBonus;
+
+        if (jumpBuffSlot != null)
         {
-            StopCoroutine(buffTimer);
+            buffPool.Return(jumpBuffSlot);
+            jumpBuffSlot = null;
         }
-        buffTimer = StartCoroutine(ResetBuffAfterDelay(buffDuration));
+
+        jumpBuffSlot = buffPool.GetBuffSlot();
+        jumpBuffSlot.Init(buffPool);
+        jumpBuffSlot.SetBuff(icon, buffDuration);
+
+        if (jumpBuffTimer != null)
+            StopCoroutine(jumpBuffTimer);
+        jumpBuffTimer = StartCoroutine(ResetJumpBuffAfterDelay(buffDuration));
     }
 
-    IEnumerator ResetBuffAfterDelay(float delay)
+    IEnumerator ResetSpeedBuffAfterDelay(float delay)
     {
         yield return new WaitForSeconds(delay);
-
         controller.moveSpeed -= speedBonus;
-        controller.jumpPower -= jumpBonus;
-
         speedBonus = 0f;
+        speedBuffTimer = null;
+
+        if (speedBuffSlot != null)
+        {
+            buffPool.Return(speedBuffSlot);
+            speedBuffSlot = null;
+        }
+    }
+
+    IEnumerator ResetJumpBuffAfterDelay(float delay)
+    {
+        yield return new WaitForSeconds(delay);
+        controller.jumpPower -= jumpBonus;
         jumpBonus = 0f;
-        buffTimer = null;
+        jumpBuffTimer = null;
+
+        if (jumpBuffSlot != null)
+        {
+            buffPool.Return(jumpBuffSlot);
+            jumpBuffSlot = null;
+        }
     }
 
     public void Die()
