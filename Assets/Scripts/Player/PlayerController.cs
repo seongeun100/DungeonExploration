@@ -19,6 +19,15 @@ public class PlayerController : MonoBehaviour
     private Vector2 mouseDelta;
     public bool canLook = true;
 
+    [Header("Wall Cling")]
+    public float wallCheckDistance = 1f;
+    public LayerMask wallLayer;
+    public float staminaCostOnClimb = 5f;
+    private bool isCheckWall;
+    public float wallClimbForce = 5f;
+
+    private bool isWallCling = false;
+
     private Interaction interaction;
     private PlayerCondition condition;
     private float staminaCostOnJump = 10f;
@@ -42,6 +51,20 @@ public class PlayerController : MonoBehaviour
 
     void Update()
     {
+
+        if (isWallCling)
+        {
+            if (!IsWall())
+            {
+                StopWallCling();
+            }
+            if (!condition.UseStamina(staminaCostOnClimb * Time.deltaTime))
+            {
+                StopWallCling();
+            }
+            WallMove();
+            return;
+        }
         Move();
     }
 
@@ -60,6 +83,18 @@ public class PlayerController : MonoBehaviour
         dir.y = _rigidbody.velocity.y;
 
         _rigidbody.velocity = dir;
+    }
+
+    void WallMove()
+    {
+        if (curMovementInput == Vector2.zero)
+        {
+            _rigidbody.velocity = Vector3.zero;
+            return;
+        }
+        Vector3 dir = transform.up * curMovementInput.y + transform.right * curMovementInput.x;
+
+        _rigidbody.AddForce(dir * wallClimbForce, ForceMode.Acceleration);
     }
 
     void CameraLook()
@@ -90,7 +125,14 @@ public class PlayerController : MonoBehaviour
 
     public void OnJump(InputAction.CallbackContext context)
     {
-        if (context.phase == InputActionPhase.Started && IsGrounded() && condition.UseStamina(staminaCostOnJump))
+        if (context.phase != InputActionPhase.Started) return;
+
+        if (isWallCling)
+        {
+            StopWallCling();
+        }
+
+        if (IsGrounded() && condition.UseStamina(staminaCostOnJump))
         {
             _rigidbody.AddForce(Vector2.up * jumpPower, ForceMode.Impulse);
         }
@@ -148,4 +190,46 @@ public class PlayerController : MonoBehaviour
         }
     }
 
+    public void OnWallCling(InputAction.CallbackContext context)
+    {
+        if (context.phase == InputActionPhase.Started && !isWallCling)
+        {
+            if (IsWall() && condition.UseStamina(staminaCostOnClimb))
+            {
+                WallCling();
+            }
+        }
+    }
+
+    bool IsWall()
+    {
+        // 현재 오브젝트에 붙은 Collider 가져옴
+        CapsuleCollider col = GetComponent<CapsuleCollider>();
+
+        // 캡슐 중심점
+        Vector3 center = transform.position + col.center;
+        // 캡슐 중싱에서 반구 중심까지 계산
+        Vector3 offset = Vector3.up * ((col.height / 2f) - col.radius);
+
+        Vector3 point1 = center + offset; // 위쪽 중심점
+        Vector3 point2 = center - offset; // 아래쪽 중심점
+
+        // point1,point2 사이를 기준으로 radius만큼 커진 캡슐을 forward 방향으로 쏴서 감지
+        isCheckWall = Physics.CapsuleCast(point1, point2, col.radius, transform.forward, wallCheckDistance, wallLayer);
+
+        return isCheckWall;
+    }
+
+    void WallCling()
+    {
+        isWallCling = true;
+        _rigidbody.useGravity = false;
+        _rigidbody.velocity = Vector3.zero;
+    }
+    void StopWallCling()
+    {
+        isWallCling = false;
+        _rigidbody.useGravity = true;
+    }
+    
 }

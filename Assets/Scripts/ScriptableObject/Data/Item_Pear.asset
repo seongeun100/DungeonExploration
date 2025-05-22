@@ -10,13 +10,13 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: f40b028edd3af43e49d1d9cce51b063b, type: 3}
-  m_Name: Item_SpeedCarrot
+  m_Name: Item_Pear
   m_EditorClassIdentifier: 
-  displayName: "\uD30C\uB780 \uB2F9\uADFC"
-  description: "\uBA39\uC73C\uBA74 \uC18D\uB3C4\uAC00 \uC99D\uAC00\uD558\uB294 \uB2F9\uADFC\uC785\uB2C8\uB2E4."
+  displayName: "\uBC30"
+  description: "\uBA39\uC73C\uBA74 \uC18D\uB3C4\uAC00 \uC99D\uAC00\uD558\uB294 \uBC30\uC785\uB2C8\uB2E4."
   type: 1
-  icon: {fileID: 21300000, guid: 80b3e79b3968d4e9e97a66073e151662, type: 3}
-  dropPrefab: {fileID: 1576555274316919244, guid: 1ad609c73d2fb4f4c88ad0664385ab20, type: 3}
+  icon: {fileID: 21300000, guid: d6cf5833d2e664688aa7cb731f2c9638, type: 3}
+  dropPrefab: {fileID: 1797258832210334778, guid: 547e88e8c36d74518ac78ba5a2ec5ed2, type: 3}
   canStack: 1
   maxStackAmount: 30
   consumables:
