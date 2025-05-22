@@ -75,8 +75,7 @@ public class PlayerCondition : MonoBehaviour
 
         // UI 버프 슬롯 새로 적용
         speedBuffSlot = buffPool.GetBuffSlot();
-        speedBuffSlot.Init(buffPool);
-        speedBuffSlot.SetBuff(icon, buffDuration);
+        speedBuffSlot.SetBuff(icon, buffDuration, buffPool);
 
         // 코루틴 타이머 재시작
         if (speedBuffTimer != null)
@@ -99,8 +98,7 @@ public class PlayerCondition : MonoBehaviour
         }
 
         jumpBuffSlot = buffPool.GetBuffSlot();
-        jumpBuffSlot.Init(buffPool);
-        jumpBuffSlot.SetBuff(icon, buffDuration);
+        jumpBuffSlot.SetBuff(icon, buffDuration, buffPool);
 
         if (jumpBuffTimer != null)
             StopCoroutine(jumpBuffTimer);

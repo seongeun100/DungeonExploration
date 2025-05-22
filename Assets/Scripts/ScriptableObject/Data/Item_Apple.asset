@@ -13,9 +13,8 @@ MonoBehaviour:
   m_Name: Item_Apple
   m_EditorClassIdentifier: 
   displayName: "\uC0AC\uACFC"
-  description: "\uBA39\uC73C\uBA74 \uC810\uD504\uB825\uC774 \uC99D\uAC00\uD558\uB294
-    \uC0AC\uACFC\uC785\uB2C8\uB2E4.."
-  type: 1
+  description: "\uBA39\uC73C\uBA74 \uC810\uD504\uB825\uC774 \uC99D\uAC00\uD569\uB2C8\uB2E4"
+  type: 0
   icon: {fileID: 21300000, guid: f38f89053ee56452695721560512ddb5, type: 3}
   dropPrefab: {fileID: 592264861673633894, guid: a456a7915cbc74b79a6929a6e4c2b6d0, type: 3}
   canStack: 1

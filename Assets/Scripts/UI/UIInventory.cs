@@ -9,7 +9,7 @@ public class UIInventory : MonoBehaviour
     public Transform slotPanel;
     public Transform dropPosition;
 
-    private ItemSlot selectedItem;
+    private ItemData selectedItem;
     private int selectedItemIndex;
 
     [Header("Select Item")]
@@ -18,11 +18,7 @@ public class UIInventory : MonoBehaviour
     public TextMeshProUGUI selectedItemStatName;
     public TextMeshProUGUI selectedItemStatValue;
     public GameObject useButton;
-    public GameObject equipButton;
-    public GameObject unEquipButton;
     public GameObject dropButton;
-
-    private int curEquipIndex;
 
     private PlayerController controller;
     private PlayerCondition condition;
@@ -60,8 +56,6 @@ public class UIInventory : MonoBehaviour
         selectedItemStatValue.text = string.Empty;
 
         useButton.SetActive(false);
-        equipButton.SetActive(false);
-        unEquipButton.SetActive(false);
         dropButton.SetActive(false);
     }
 
@@ -163,43 +157,41 @@ public class UIInventory : MonoBehaviour
     {
         if (slots[index].item == null) return;
 
-        selectedItem = slots[index];
+        selectedItem = slots[index].item;
         selectedItemIndex = index;
 
-        selectedItemName.text = selectedItem.item.displayName;
-        selectedItemDescription.text = selectedItem.item.description;
+        selectedItemName.text = selectedItem.displayName;
+        selectedItemDescription.text = selectedItem.description;
 
         selectedItemStatName.text = string.Empty;
         selectedItemStatValue.text = string.Empty;
 
-        for (int i = 0; i < selectedItem.item.consumables.Length; i++)
+        for (int i = 0; i < selectedItem.consumables.Length; i++)
         {
-            selectedItemStatName.text += selectedItem.item.consumables[i].type.ToString() + "\n";
-            selectedItemStatValue.text += selectedItem.item.consumables[i].value.ToString() + "\n";
+            selectedItemStatName.text += selectedItem.consumables[i].type.ToString() + "\n";
+            selectedItemStatValue.text += selectedItem.consumables[i].value.ToString() + "\n";
         }
 
-        useButton.SetActive(selectedItem.item.type == ItemType.Consumable);
-        equipButton.SetActive(selectedItem.item.type == ItemType.Equipable && !slots[index].equipped);
-        unEquipButton.SetActive(selectedItem.item.type == ItemType.Equipable && slots[index].equipped);
+        useButton.SetActive(selectedItem.type == ItemType.Consumable);
         dropButton.SetActive(true);
     }
 
     public void OnUseButton()
     {
-        if (selectedItem.item.type == ItemType.Consumable)
+        if (selectedItem.type == ItemType.Consumable)
         {
-            for (int i = 0; i < selectedItem.item.consumables.Length; i++)
+            for (int i = 0; i < selectedItem.consumables.Length; i++)
             {
-                switch (selectedItem.item.consumables[i].type)
+                switch (selectedItem.consumables[i].type)
                 {
                     case ConsumableType.Health:
-                        condition.Heal(selectedItem.item.consumables[i].value); break;
+                        condition.Heal(selectedItem.consumables[i].value); break;
                     case ConsumableType.Hunger:
-                        condition.Eat(selectedItem.item.consumables[i].value); break;
+                        condition.Eat(selectedItem.consumables[i].value); break;
                     case ConsumableType.MoveSpeed:
-                        condition.AddMoveSpeed(selectedItem.item.consumables[i].value, selectedItem.item.icon); break;
+                        condition.AddMoveSpeed(selectedItem.consumables[i].value, selectedItem.icon); break;
                     case ConsumableType.JumpPower:
-                        condition.AddJumpPower(selectedItem.item.consumables[i].value, selectedItem.item.icon); break;
+                        condition.AddJumpPower(selectedItem.consumables[i].value, selectedItem.icon); break;
                 }
             }
             RemoveSelctedItem();
@@ -208,22 +200,17 @@ public class UIInventory : MonoBehaviour
 
     public void OnDropButton()
     {
-        ThrowItem(selectedItem.item);
+        ThrowItem(selectedItem);
         RemoveSelctedItem();
     }
 
     void RemoveSelctedItem()
     {
-        selectedItem.quantity--;
+        slots[selectedItemIndex].quantity--;
 
-        if (selectedItem.quantity <= 0)
+        if (slots[selectedItemIndex].quantity <= 0)
         {
-            if (slots[selectedItemIndex].equipped)
-            {
-                // UnEquip(selectedItemIndex);
-            }
-
-            selectedItem.item = null;
+            selectedItem = null;
             ClearSelectedItemWindow();
         }
 
@@ -234,4 +221,5 @@ public class UIInventory : MonoBehaviour
     {
         return false;
     }
+
 }

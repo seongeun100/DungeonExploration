@@ -13,8 +13,8 @@ MonoBehaviour:
   m_Name: Item_Pear
   m_EditorClassIdentifier: 
   displayName: "\uBC30"
-  description: "\uBA39\uC73C\uBA74 \uC18D\uB3C4\uAC00 \uC99D\uAC00\uD558\uB294 \uBC30\uC785\uB2C8\uB2E4."
-  type: 1
+  description: "\uBA39\uC73C\uBA74 \uC774\uB3D9\uC18D\uB3C4\uAC00 \uC99D\uAC00\uD569\uB2C8\uB2E4"
+  type: 0
   icon: {fileID: 21300000, guid: d6cf5833d2e664688aa7cb731f2c9638, type: 3}
   dropPrefab: {fileID: 1797258832210334778, guid: 547e88e8c36d74518ac78ba5a2ec5ed2, type: 3}
   canStack: 1
