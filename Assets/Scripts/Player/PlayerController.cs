@@ -22,7 +22,7 @@ public class PlayerController : MonoBehaviour
     [Header("Wall Cling")]
     public float wallCheckDistance = 1f;
     public LayerMask wallLayer;
-    public float staminaCostOnClimb = 5f;
+    public float staminaCostOnClimb = 10f;
     private bool isCheckWall;
     public float wallClimbForce = 5f;
 
@@ -51,22 +51,23 @@ public class PlayerController : MonoBehaviour
 
     void Update()
     {
-
         if (isWallCling)
         {
-            if (!IsWall())
+            // 매 프레임 스태미나 소모
+            if (!IsWall() || !condition.UseStamina(staminaCostOnClimb * Time.deltaTime))
             {
                 StopWallCling();
             }
-            if (!condition.UseStamina(staminaCostOnClimb * Time.deltaTime))
+            else
             {
-                StopWallCling();
+                WallMove();
             }
-            WallMove();
             return;
         }
+
         Move();
     }
+
 
     void LateUpdate()
     {
@@ -95,6 +96,10 @@ public class PlayerController : MonoBehaviour
         Vector3 dir = transform.up * curMovementInput.y + transform.right * curMovementInput.x;
 
         _rigidbody.AddForce(dir * wallClimbForce, ForceMode.Acceleration);
+    }
+    public bool IsWallClinging()
+    {
+        return isWallCling;
     }
 
     void CameraLook()

@@ -29,8 +29,11 @@ public class PlayerCondition : MonoBehaviour
 
     void Update()
     {
-        hunger.Subtract(hunger.paasiveValue * Time.deltaTime);
-        stamina.Add(stamina.paasiveValue * Time.deltaTime);
+        // hunger.Subtract(hunger.paasiveValue * Time.deltaTime);
+        if (!controller.IsWallClinging())
+        {
+            stamina.Add(stamina.paasiveValue * Time.deltaTime);
+        }
 
         if (hunger.curValue == 0f)
         {
