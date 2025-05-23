@@ -5,36 +5,35 @@ using UnityEngine.InputSystem;
 public class PlayerController : MonoBehaviour
 {
     [Header("Movement")]
+    [SerializeField] private LayerMask groundLayerMask;
+    [SerializeField] private float staminaCostOnJump;
     public float moveSpeed;
     public float jumpPower;
     private Vector2 curMovementInput;
-    public LayerMask groundLayerMask;
 
     [Header("Look")]
-    public Transform cameraContainer;
-    public float minXLook;
-    public float maxXLook;
+    [SerializeField] private Transform cameraContainer;
+    [SerializeField] private float minXLook;
+    [SerializeField] private float maxXLook;
+    [SerializeField] private float lookSensitivity;
+    private bool canLook = true;
     private float camCurXRot;
-    public float lookSensitivity;
     private Vector2 mouseDelta;
-    public bool canLook = true;
 
     [Header("Wall Cling")]
-    public float wallCheckDistance = 1f;
-    public LayerMask wallLayer;
-    public float staminaCostOnClimb = 10f;
+    [SerializeField] private float wallCheckDistance = 1f;
+    [SerializeField] private LayerMask wallLayer;
+    [SerializeField] private float staminaCostOnClimb = 10f;
+    [SerializeField] private float wallClimbForce = 5f;
     private bool isCheckWall;
-    public float wallClimbForce = 5f;
-
-    private bool isWallCling = false;
+    private bool isWallCling;
 
     private Interaction interaction;
     private PlayerCondition condition;
-    private float staminaCostOnJump = 10f;
     private CameraSwitch cameraSwitch;
 
     private Rigidbody _rigidbody;
-    internal Action inventory;
+    public Action inventory;
 
     void Awake()
     {
@@ -43,7 +42,7 @@ public class PlayerController : MonoBehaviour
 
     void Start()
     {
-        Cursor.lockState = CursorLockMode.Locked;
+        Cursor.lockState = CursorLockMode.Locked; // 마우스 커서 고정
         interaction = GetComponent<Interaction>();
         condition = GetComponent<PlayerCondition>();
         cameraSwitch = GetComponent<CameraSwitch>();
@@ -53,19 +52,19 @@ public class PlayerController : MonoBehaviour
     {
         if (isWallCling)
         {
-            // 매 프레임 스태미나 소모
+            // 벽 감지 안되거나 스태미나 부족하면 벽타기 중단
             if (!IsWall() || !condition.UseStamina(staminaCostOnClimb * Time.deltaTime))
             {
                 StopWallCling();
             }
             else
             {
-                WallMove();
+                WallMove(); // 벽타기 이동
             }
             return;
         }
 
-        Move();
+        Move(); // 일반 이동
     }
 
 
@@ -81,7 +80,7 @@ public class PlayerController : MonoBehaviour
     {
         Vector3 dir = transform.forward * curMovementInput.y + transform.right * curMovementInput.x;
         dir *= moveSpeed;
-        dir.y = _rigidbody.velocity.y;
+        dir.y = _rigidbody.velocity.y; // y값 유지
 
         _rigidbody.velocity = dir;
     }
@@ -97,11 +96,14 @@ public class PlayerController : MonoBehaviour
 
         _rigidbody.AddForce(dir * wallClimbForce, ForceMode.Acceleration);
     }
+
+    // 벽타기 상태 확인용 (PlayerCondition에서 사용)
     public bool IsWallClinging()
     {
         return isWallCling;
     }
 
+    // 카메라 회전
     void CameraLook()
     {
         camCurXRot += mouseDelta.y * lookSensitivity;
@@ -111,6 +113,7 @@ public class PlayerController : MonoBehaviour
         transform.eulerAngles += new Vector3(0, mouseDelta.x * lookSensitivity, 0);
     }
 
+    // 이동 입력
     public void OnMove(InputAction.CallbackContext context)
     {
         if (context.phase == InputActionPhase.Performed)
@@ -123,11 +126,13 @@ public class PlayerController : MonoBehaviour
         }
     }
 
+    // 마우스 키 입력
     public void OnLook(InputAction.CallbackContext context)
     {
         mouseDelta = context.ReadValue<Vector2>();
     }
 
+    // 점프 키 입력
     public void OnJump(InputAction.CallbackContext context)
     {
         if (context.phase != InputActionPhase.Started) return;
@@ -143,6 +148,7 @@ public class PlayerController : MonoBehaviour
         }
     }
 
+    // 상호작용 키 입력(F키)
     public void OnInteract(InputAction.CallbackContext context)
     {
         if (context.phase == InputActionPhase.Started)
@@ -151,6 +157,7 @@ public class PlayerController : MonoBehaviour
         }
     }
 
+    // 바닥에 닿았는지 확인
     bool IsGrounded()
     {
         Ray[] rays = new Ray[4]
@@ -171,6 +178,7 @@ public class PlayerController : MonoBehaviour
         return false;
     }
 
+    // 인벤토리 키 입력(TAB키)
     public void OnInventory(InputAction.CallbackContext context)
     {
         if (context.phase == InputActionPhase.Started)
@@ -180,6 +188,7 @@ public class PlayerController : MonoBehaviour
         }
     }
 
+    // 마우스 커서 락
     void ToggleCusor()
     {
         bool toggle = Cursor.lockState == CursorLockMode.Locked;
@@ -187,6 +196,7 @@ public class PlayerController : MonoBehaviour
         canLook = !toggle;
     }
 
+    // 카메라 시점 전환 키 입력(V키)
     public void OnSwitchView(InputAction.CallbackContext context)
     {
         if (context.phase == InputActionPhase.Started)
@@ -195,6 +205,7 @@ public class PlayerController : MonoBehaviour
         }
     }
 
+    // 벽타기 키 입력(E키)
     public void OnWallCling(InputAction.CallbackContext context)
     {
         if (context.phase == InputActionPhase.Started && !isWallCling)
@@ -206,6 +217,7 @@ public class PlayerController : MonoBehaviour
         }
     }
 
+    // 벽 감지 확인
     bool IsWall()
     {
         // 현재 오브젝트에 붙은 Collider 가져옴
@@ -225,18 +237,21 @@ public class PlayerController : MonoBehaviour
         return isCheckWall;
     }
 
+    // 벽타기 시작
     void WallCling()
     {
-        isWallCling = true;
-        _rigidbody.useGravity = false;
-        _rigidbody.velocity = Vector3.zero;
+        isWallCling = true; // 벽타기 상태
+        _rigidbody.useGravity = false; // 중력 비활성화
+        _rigidbody.velocity = Vector3.zero; // 이동속도 초기화
     }
+
+    // 벽타기 종료
     void StopWallCling()
     {
         isWallCling = false;
-        _rigidbody.useGravity = true;
+        _rigidbody.useGravity = true; // 중력 활성화
         Vector3 velocity = _rigidbody.velocity;
-        velocity.y = 0f;
+        velocity.y = 0f; // 벽타기 끝날시 위로 튀는 현상 방지
         _rigidbody.velocity = velocity;
     }
 

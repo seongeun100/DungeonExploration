@@ -2,8 +2,8 @@ using UnityEngine;
 
 public class CameraSwitch : MonoBehaviour
 {
-    public Camera firstPersonCamera; // 1인칭 시점 카메라
-    public Camera thirdPersonCamera; // 3인칭 시점 카메라
+    [SerializeField] private Camera firstPersonCamera; // 1인칭 시점 카메라
+    [SerializeField] private Camera thirdPersonCamera; // 3인칭 시점 카메라
 
     private bool isFirstPerson = true; // 현재 카메라 상태(true = 1인칭, false = 3인칭)
 

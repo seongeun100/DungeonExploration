@@ -4,17 +4,17 @@ using UnityEngine;
 
 public class LoopPad : MonoBehaviour
 {
-    public Transform pointA;
-    public Transform pointB;
-    public float moveSpeed = 5f;
-    public float waitTime = 2f;
+    [SerializeField] private Transform pointA;
+    [SerializeField] private Transform pointB;
+    [SerializeField] private float moveSpeed = 5f;
+    [SerializeField] private float waitTime = 2f;
 
-    private Vector3 target;
-    private bool isMovingToB = true;
-    private bool isWaiting = false;
-    private Vector3 lastPosition;
+    private Vector3 target; // 현재 목표 위치
+    private bool isMovingToB = true; // pointB로 이동 여부
+    private bool isWaiting = false; // 대기 여부
+    private Vector3 lastPosition; // 이동량 계산용 위치
 
-    private List<Transform> objectOnPad = new List<Transform>();
+    private List<Transform> objectOnPad = new List<Transform>(); // 발판 위에 있는 오브젝트들
 
     void Start()
     {
@@ -36,7 +36,7 @@ public class LoopPad : MonoBehaviour
             StartCoroutine(WaitBeforeSwitch());
         }
 
-        // 현재 위치 변화량
+        // 이동 거리 계산
         Vector3 delta = transform.position - lastPosition;
 
         // 발판 위에 있는 모든 오브젝트 같이 이동

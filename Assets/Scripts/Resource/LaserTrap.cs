@@ -3,19 +3,19 @@ using UnityEngine;
 
 public class LaserTrap : MonoBehaviour
 {
-    public Transform laserStart;
-    public Transform laserEnd;
-    public LayerMask Player;
-    public GameObject warningPanel;
+    [SerializeField] private Transform laserStart;
+    [SerializeField] private Transform laserEnd;
+    [SerializeField] private LayerMask Player;
+    [SerializeField] private GameObject warningPanel;
+    [SerializeField] private LineRenderer lineRenderer;
+
     private Coroutine warning;
-
-    public LineRenderer lineRenderer;
-
     private float checkRate = 0.05f;
     private float lastCheckTime;
 
     void Update()
     {
+        // 일정 주기마다 감지
         if (Time.time - lastCheckTime > checkRate)
         {
             lastCheckTime = Time.time;
@@ -40,15 +40,16 @@ public class LaserTrap : MonoBehaviour
         if (Physics.Raycast(ray, out hit, distance, Player))
         {
             ShowWarning();
-
+            
+            // 플레이어 뒤로 밀어냄
             Transform player = hit.collider.transform;
-
             player.position -= transform.forward * 5f;
         }
     }
 
     void ShowWarning()
     {
+        // 경고가 표시되고 있을때 중복 방지
         if (warning == null)
         {
             warningPanel.SetActive(true);

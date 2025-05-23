@@ -3,22 +3,21 @@ using UnityEngine;
 
 public class LiftPad : MonoBehaviour
 {
-    public Transform startPoint;
-    public Transform endPoint;
-    public float moveSpeed = 2f;
+    [SerializeField] private Transform startPoint;
+    [SerializeField] private Transform endPoint;
+    [SerializeField] private float moveSpeed = 2f;
 
-    private Vector3 target;
+    private Vector3 target; // 현재 목표 위치
     private bool isMovingToEnd; // endPoint로 이동 여부
+    private Vector3 lastPosition; // 이동량 계산용 위치
 
-    private Vector3 lastPosition;
-
-    private List<Transform> objectOnPad = new List<Transform>();
+    private List<Transform> objectOnPad = new List<Transform>(); // 발판 위에 있는 오브젝트들
 
 
     void Start()
     {
         lastPosition = transform.position;
-        SetTarget();
+        SetTarget(); // 초기 타겟 설정
     }
 
     void Update()
@@ -26,7 +25,7 @@ public class LiftPad : MonoBehaviour
         // 현재 위치를 목표 지점으로 일정한 속도로 이동
         transform.position = Vector3.MoveTowards(transform.position, target, moveSpeed * Time.deltaTime);
 
-        // 현재 위치 변화량
+        // 이동 거리 계산
         Vector3 delta = transform.position - lastPosition;
 
         // 발판 위에 있는 모든 오브젝트 같이 이동

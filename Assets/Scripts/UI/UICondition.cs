@@ -2,9 +2,11 @@ using UnityEngine;
 
 public class UICondition : MonoBehaviour
 {
-    public Condition health;
-    public Condition hunger;
-    public Condition stamina;
+    [SerializeField] private Condition health;
+    [SerializeField] private Condition stamina;
+
+    public Condition Health => health;
+    public Condition Stamina => stamina;
 
     void Start()
     {
