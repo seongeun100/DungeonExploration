@@ -64,4 +64,3 @@
 - Unity 3D BRP
 - TextMeshPro
 - Unity Input System
-- PlayerPrefs
